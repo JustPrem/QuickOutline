@@ -1,15 +1,14 @@
 ﻿//
-//  Outline.shader
+//  OutlineFill.shader
 //  QuickOutline
 //
-//  Created by Chris Nolet on 5/7/18.
+//  Created by Chris Nolet on 2/21/18.
 //  Copyright © 2018 Chris Nolet. All rights reserved.
 //
 
-Shader "Custom/Outline" {
+Shader "Custom/Outline Fill" {
   Properties {
-    [Enum(UnityEngine.Rendering.CompareFunction)] _ZTestMask("ZTest Mask", Float) = 0
-    [Enum(UnityEngine.Rendering.CompareFunction)] _ZTestFill("ZTest Fill", Float) = 0
+    [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 0
 
     _OutlineColor("Outline Color", Color) = (1, 1, 1, 1)
     _OutlineWidth("Outline Width", Range(0, 10)) = 2
@@ -17,28 +16,15 @@ Shader "Custom/Outline" {
 
   SubShader {
     Tags {
-      "Queue" = "Transparent+100"
+      "Queue" = "Transparent+110"
       "RenderType" = "Transparent"
       "DisableBatching" = "True"
     }
 
     Pass {
-      Name "Mask"
-      Cull Off
-      ZTest [_ZTestMask]
-      ZWrite Off
-      ColorMask 0
-
-      Stencil {
-        Ref 1
-        Pass Replace
-      }
-    }
-
-    Pass {
       Name "Fill"
       Cull Off
-      ZTest [_ZTestFill]
+      ZTest [_ZTest]
       ZWrite Off
       Blend SrcAlpha OneMinusSrcAlpha
       ColorMask RGB
@@ -90,18 +76,6 @@ Shader "Custom/Outline" {
         return input.color;
       }
       ENDCG
-    }
-
-    Pass {
-      Name "Reset"
-      Cull Off
-      ZTest [_ZTestMask]
-      ZWrite Off
-      ColorMask 0
-
-      Stencil {
-        Pass Zero
-      }
     }
   }
 }
